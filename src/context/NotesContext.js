@@ -21,8 +21,8 @@ export const NotesContextProvider = (props) => {
     return database.getNotes(setNotes);
   };
 
-  const addNewNote = (notes) => {
-    return database.insertNotes(notes, refreshNotes);
+  const addNewNote = (note) => {
+    return database.insertNotes(note, refreshNotes);
   };
 
   // Crear el objeto de contexto
