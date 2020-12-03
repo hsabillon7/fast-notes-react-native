@@ -31,7 +31,10 @@ const getNotes = (setNotesFunc) => {
 const insertNotes = (note, successFunc) => {
   db.transaction(
     (tx) => {
-      tx.executeSql("insert into notes (note) values (?)", [note]);
+      tx.executeSql("insert into notes (note, status) values (?,?)", [
+        note,
+        "NUEVA",
+      ]);
     },
     (_t, error) => {
       console.log("Error al insertar la nota");
@@ -50,12 +53,12 @@ const dropDatabaseTableAsync = async () => {
       (tx) => {
         tx.executeSql("drop table notes");
       },
-      (_, result) => {
-        resolve(result);
-      },
-      (_, error) => {
+      (_t, error) => {
         console.log("Error al eliminar la tabla de notas");
         reject(error);
+      },
+      (_t, result) => {
+        resolve(result);
       }
     );
   });
@@ -67,11 +70,34 @@ const setupDatabaseTableAsync = async () => {
     db.transaction(
       (tx) => {
         tx.executeSql(
-          "create table if not exists notes (id integer primary key not null, note text)"
+          "create table if not exists notes (id integer primary key autoincrement, note text not null, status text not null);"
         );
       },
       (_t, error) => {
-        console.log("Error al momento de crear la table");
+        console.log("Error al momento de crear la tabla");
+        console.log(error);
+        reject(error);
+      },
+      (_t, success) => {
+        console.log("Tabla creada!");
+        resolve(success);
+      }
+    );
+  });
+};
+
+// Agrega una nota por defecto
+const setupNotesAsync = async () => {
+  return new Promise((resolve, reject) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql("insert into notes (note, status) values (?,?)", [
+          "Bienvenido a Fastnotes",
+          "NUEVA",
+        ]);
+      },
+      (_t, error) => {
+        console.log("Error al momento de insertar los valores por defecto");
         console.log(error);
         reject(error);
       },
@@ -87,4 +113,5 @@ export const database = {
   insertNotes,
   dropDatabaseTableAsync,
   setupDatabaseTableAsync,
+  setupNotesAsync,
 };
