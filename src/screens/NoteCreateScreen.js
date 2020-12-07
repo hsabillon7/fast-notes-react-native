@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import {
   Button,
@@ -8,21 +8,31 @@ import {
   Text,
   Textarea,
   Spinner,
+  View,
 } from "native-base";
-import { useFonts, Roboto_500Medium } from "@expo-google-fonts/roboto";
+import * as Font from "expo-font";
 
 // Importar el contexto de las notas
 import { NotesContext } from "../context/NotesContext";
 
 const NoteCreateScreen = ({ navigation }) => {
   const [note, setNote] = useState("");
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   const notesContext = useContext(NotesContext);
   const { addNewNote, refreshNotes } = notesContext;
 
   // Cargar la fuente de manera asíncrona
-  const [fontsLoaded] = useFonts({
-    Roboto_500Medium,
-  });
+  useEffect(() => {
+    const loadFontsAsync = async () => {
+      await Font.loadAsync({
+        Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+      }).then(() => {
+        setFontsLoaded(true);
+      });
+    };
+
+    loadFontsAsync();
+  }, []);
 
   const handlerNewNote = () => {
     addNewNote(note, refreshNotes);
@@ -31,7 +41,12 @@ const NoteCreateScreen = ({ navigation }) => {
     navigation.goBack();
   };
 
-  if (!fontsLoaded) return <Spinner color="blue" />;
+  if (!fontsLoaded)
+    return (
+      <Content contentContainerStyle={styles.content}>
+        <Spinner color="blue" />
+      </Content>
+    );
 
   return (
     <Content>
@@ -53,6 +68,10 @@ const NoteCreateScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+    justifyContent: "center",
+  },
   button: {
     fontFamily: "Roboto",
   },
