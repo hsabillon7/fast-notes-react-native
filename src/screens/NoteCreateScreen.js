@@ -18,6 +18,8 @@ import { NotesContext } from "../context/NotesContext";
 const NoteCreateScreen = ({ navigation }) => {
   const [note, setNote] = useState("");
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [enableSave, setEnableSave] = useState(true);
+  const [errorNote, setErrorNote] = useState(false);
   const notesContext = useContext(NotesContext);
   const { addNewNote, refreshNotes } = notesContext;
 
@@ -34,11 +36,25 @@ const NoteCreateScreen = ({ navigation }) => {
     loadFontsAsync();
   }, []);
 
-  const handlerNewNote = () => {
-    addNewNote(note, refreshNotes);
+  // Ejecutar el efecto cuando el valor de la nota cambie
+  useEffect(() => {
+    if (note) setEnableSave(false);
+    else setEnableSave(true);
+  }, [note]);
 
-    // Regresar a la pantalla anterior
-    navigation.goBack();
+  const handlerNewNote = () => {
+    // Validar que la nota tiene valor
+    if (note) {
+      addNewNote(note, refreshNotes);
+
+      // Refrescar las notas
+      refreshNotes();
+
+      // Regresar a la pantalla anterior
+      navigation.goBack();
+    } else {
+      setErrorNote(true);
+    }
   };
 
   if (!fontsLoaded)
@@ -50,7 +66,7 @@ const NoteCreateScreen = ({ navigation }) => {
 
   return (
     <Content>
-      <Container>
+      <Container style={styles.container}>
         <H1>Ingresa tu nota</H1>
         <Textarea
           rowSpan={5}
@@ -58,8 +74,16 @@ const NoteCreateScreen = ({ navigation }) => {
           placeholder="Escribe algo..."
           value={note}
           onChangeText={setNote}
+          style={errorNote ? styles.inputError : styles.note}
         />
-        <Button style={styles.button} onPress={handlerNewNote}>
+        {errorNote ? (
+          <Text style={styles.error}>¡Debes ingresar una nota!</Text>
+        ) : null}
+        <Button
+          style={styles.button}
+          onPress={handlerNewNote}
+          // disabled={enableSave}
+        >
           <Text>Guardar</Text>
         </Button>
       </Container>
@@ -72,8 +96,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
   },
+  container: {
+    padding: 10,
+  },
   button: {
     fontFamily: "Roboto",
+  },
+  error: {
+    fontSize: 12,
+    color: "red",
+    marginBottom: 10,
+  },
+  inputError: {
+    borderColor: "red",
+  },
+  note: {
+    borderColor: "black",
+    marginBottom: 10,
   },
 });
 
