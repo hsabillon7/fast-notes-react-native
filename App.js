@@ -7,6 +7,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NotesContextProvider } from "./src/context/NotesContext";
 import NotesListScreen from "./src/screens/NotesListScreen";
 import NoteCreateScreen from "./src/screens/NoteCreateScreen";
+import NoteModifyScreen from "./src/screens/NoteModifyScreen";
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,7 @@ export default function App() {
           <Stack.Navigator initialRouteName="notesList">
             <Stack.Screen name="notesList" component={NotesListScreen} />
             <Stack.Screen name="noteCreate" component={NoteCreateScreen} />
+            <Stack.Screen name="noteModify" component={NoteModifyScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </NotesContextProvider>
