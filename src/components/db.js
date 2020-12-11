@@ -27,8 +27,28 @@ const getNotes = (setNotesFunc) => {
   });
 };
 
+// Obtener la nota por el id
+const getNoteById = (id, setNoteFunc) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "select * from notes where id = ?",
+      [id],
+      (_, { rows: { _array } }) => {
+        setNoteFunc(_array);
+      },
+      (_t, error) => {
+        console.log("Error al momento de obtener las notas");
+        console.log(error);
+      },
+      (_t, _success) => {
+        console.log("Nota obtenidas");
+      }
+    );
+  });
+};
+
 // Insertar notas
-const insertNotes = (note, successFunc) => {
+const insertNotes = async (note, successFunc) => {
   db.transaction(
     (tx) => {
       tx.executeSql("insert into notes (note, status) values (?,?)", [
@@ -114,4 +134,5 @@ export const database = {
   dropDatabaseTableAsync,
   setupDatabaseTableAsync,
   setupNotesAsync,
+  getNoteById,
 };
