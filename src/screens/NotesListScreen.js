@@ -8,6 +8,8 @@ import {
   List,
   ListItem,
   Text,
+  Body,
+  Right,
 } from "native-base";
 
 // Utilizar el contexto de notas
@@ -16,32 +18,40 @@ import { NotesContext } from "../context/NotesContext";
 const NotesListScreen = ({ navigation }) => {
   const { notes } = useContext(NotesContext);
 
-  console.log(notes);
-
   return (
     <Container>
       <Content>
         <List>
           {notes
             ? notes.map((note) => (
-                <ListItem key={note.id.toString()}>
-                  <Text>{note.note}</Text>
+                <ListItem
+                  key={note.id.toString()}
+                  onPress={() => {
+                    navigation.navigate("noteModify", { id: note.id });
+                  }}
+                >
+                  <Body>
+                    <Text numberOfLines={2}>{note.note}</Text>
+                  </Body>
+                  <Right>
+                    <Icon name="arrow-forward" />
+                  </Right>
                 </ListItem>
               ))
             : null}
         </List>
-        <Fab
-          active={true}
-          position="bottomRight"
-          style={{ backgroundColor: "#ff0023" }}
-          direction="up"
-          onPress={() => {
-            navigation.navigate("noteCreate");
-          }}
-        >
-          <Icon name="plus" type="FontAwesome" />
-        </Fab>
       </Content>
+      <Fab
+        active={true}
+        position="bottomRight"
+        style={{ backgroundColor: "#ff0023" }}
+        direction="up"
+        onPress={() => {
+          navigation.navigate("noteCreate");
+        }}
+      >
+        <Icon name="plus" type="FontAwesome" />
+      </Fab>
     </Container>
   );
 };
