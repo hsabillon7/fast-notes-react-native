@@ -42,13 +42,10 @@ const NoteCreateScreen = ({ navigation }) => {
     else setEnableSave(true);
   }, [note]);
 
-  const handlerNewNote = () => {
+  const handlerNewNote = async () => {
     // Validar que la nota tiene valor
     if (note) {
-      addNewNote(note, refreshNotes);
-
-      // Refrescar las notas
-      refreshNotes();
+      await addNewNote(note, refreshNotes);
 
       // Regresar a la pantalla anterior
       navigation.goBack();
